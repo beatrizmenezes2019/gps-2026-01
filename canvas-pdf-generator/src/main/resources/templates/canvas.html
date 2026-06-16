@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 3mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 6pt;
+        }
+
+        /* ── WRAPPER ── */
+        .canvas-wrapper {
+            width: 100%;
+            border: 2px solid #1a237e;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background-color: #1a237e;
+            color: #ffffff;
+            padding: 4px 12px;
+            font-size: 11pt;
+            font-weight: normal;
+        }
+
+        .header .code {
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        /* ── TABELA PRINCIPAL (5 colunas) ── */
+        .main-table {
+            width: 100%;
+            height: 194mm;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        /* ── TABELAS INTERNAS (seções empilhadas dentro de cada coluna) ── */
+        .inner-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+        }
+
+        /* ── CÉLULAS DE SEÇÃO ── */
+        .section {
+            padding: 4px 6px;
+            vertical-align: top;
+            border-bottom: 1px solid #666;
+        }
+
+        .section-title {
+            font-size: 7pt;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 3px;
+            padding-bottom: 1px;
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+        }
+
+        /* ── CORES ── */
+        .yellow { background-color: #FFE030; }
+        .purple { background-color: #D9B8EE; }
+        .green  { background-color: #90EE90; }
+
+        /* ── LISTAS ── */
+        ul {
+            padding-left: 10px;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 1px;
+            line-height: 1.25;
+        }
+
+        /* ── TEXTO CORRIDO ── */
+        p {
+            margin: 0;
+            line-height: 1.3;
+            text-align: justify;
+        }
+
+        /* ── REQUISITOS ── */
+        .req-item {
+            margin-bottom: 2px;
+            line-height: 1.25;
+        }
+
+        .req-titulo {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="canvas-wrapper">
+
+    <!-- CABEÇALHO -->
+    <div class="header">
+        <span class="code" th:text="${canvas.codigoProjeto}">CÓDIGO</span>
+        <span th:text="${canvas.nomeProjeto}">Nome do Projeto</span>
+    </div>
+
+    <!-- TABELA PRINCIPAL: 5 colunas lado a lado -->
+    <table class="main-table">
+        <colgroup>
+            <col style="width:17%;"/>
+            <col style="width:27%;"/>
+            <col style="width:22%;"/>
+            <col style="width:16%;"/>
+            <col style="width:18%;"/>
+        </colgroup>
+        <tr>
+
+            <!-- ══ COL 1: Justificativas / Objetivos / Benefícios ══ -->
+            <td style="padding:0; vertical-align:top; border-right:1.5px solid #555;">
+                <table class="inner-table">
+                    <tr style="height:38%;">
+                        <td class="section yellow">
+                            <div class="section-title">Justificativas</div>
+                            <ul>
+                                <li th:each="item : ${canvas.justificativas}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr style="height:22%;">
+                        <td class="section yellow">
+                            <div class="section-title">Objetivos</div>
+                            <p th:text="${canvas.objetivos}"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="section yellow" style="border-bottom:none;">
+                            <div class="section-title">Benefícios</div>
+                            <ul>
+                                <li th:each="item : ${canvas.beneficios}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- ══ COL 2: Produto / Requisitos ══ -->
+            <td style="padding:0; vertical-align:top; border-right:1.5px solid #555;">
+                <table class="inner-table">
+                    <tr style="height:35%;">
+                        <td class="section purple">
+                            <div class="section-title">Produto</div>
+                            <p th:text="${canvas.produto}"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="section purple" style="border-bottom:none;">
+                            <div class="section-title">Requisitos</div>
+                            <div th:each="req : ${canvas.requisitos}" class="req-item">
+                                <span class="req-titulo" th:text="${req.titulo + ': '}"></span><span th:text="${req.descricao}"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- ══ COL 3: Stakeholders / Equipe / Grupo de Entregas / Restrições ══ -->
+            <td style="padding:0; vertical-align:top; border-right:1.5px solid #555;">
+                <table class="inner-table">
+                    <tr style="height:20%;">
+                        <td class="section green">
+                            <div class="section-title">Stakeholders</div>
+                            <ul>
+                                <li th:each="item : ${canvas.stakeholders}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr style="height:22%;">
+                        <td class="section green">
+                            <div class="section-title">Equipe</div>
+                            <ul>
+                                <li th:each="item : ${canvas.equipe}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr style="height:30%;">
+                        <td class="section green">
+                            <div class="section-title">Grupo de Entregas</div>
+                            <ul>
+                                <li th:each="item : ${canvas.grupoDeEntregas}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="section green" style="border-bottom:none;">
+                            <div class="section-title">Restrições</div>
+                            <ul>
+                                <li th:each="item : ${canvas.restricoes}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- ══ COL 4: Premissas (coluna inteira) ══ -->
+            <td class="section yellow" style="border-right:1.5px solid #555; border-bottom:none; vertical-align:top;">
+                <div class="section-title">Premissas</div>
+                <ul>
+                    <li th:each="item : ${canvas.premissas}" th:text="${item}"></li>
+                </ul>
+            </td>
+
+            <!-- ══ COL 5: Riscos / Linha do Tempo / Métricas ══ -->
+            <td style="padding:0; vertical-align:top;">
+                <table class="inner-table">
+                    <tr style="height:28%;">
+                        <td class="section yellow">
+                            <div class="section-title">Riscos</div>
+                            <ul>
+                                <li th:each="item : ${canvas.riscos}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr style="height:30%;">
+                        <td class="section yellow">
+                            <div class="section-title">Linha do Tempo</div>
+                            <ul>
+                                <li th:each="item : ${canvas.linhaDoTempo}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="section yellow" style="border-bottom:none;">
+                            <div class="section-title">Definição de Métricas de Sucesso</div>
+                            <ul>
+                                <li th:each="item : ${canvas.metricasDeSucesso}" th:text="${item}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>

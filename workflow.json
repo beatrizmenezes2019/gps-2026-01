@@ -1,0 +1,408 @@
+{
+  "name": "Canvas PMC - WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-600, 300],
+      "id": "pmc-0001-0001-0001-000000000001",
+      "name": "Webhook",
+      "webhookId": "0868fa46-f74b-4034-bdcb-fabffeab9233"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d001",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "d002",
+              "name": "chatId",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "d003",
+              "name": "pushName",
+              "value": "={{ $json.body.me.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "d004",
+              "name": "payload_id",
+              "value": "={{ $json.body.payload.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d005",
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "d006",
+              "name": "message",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "d007",
+              "name": "fromMe",
+              "value": "={{ $json.body.payload.fromMe }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-380, 300],
+      "id": "pmc-0002-0002-0002-000000000002",
+      "name": "Set Dados"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-fromme",
+              "leftValue": "={{ $json.fromMe }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-140, 300],
+      "id": "pmc-0003-0003-0003-000000000003",
+      "name": "Ignorar mensagens próprias"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Set Dados').item.json.message }}",
+        "options": {
+          "systemMessage": "Você é um assistente especializado em criar o Project Model Canvas (PMC) para projetos de software. Seu objetivo é coletar, de forma conversacional e amigável, todas as informações necessárias para montar o canvas.\n\nAo iniciar uma nova conversa, apresente-se e explique que vai ajudar a criar o PMC do projeto do usuário.\n\nColete os campos abaixo na ordem indicada, confirmando cada resposta antes de avançar para o próximo:\n\n1. Código do projeto – Sigla curta (ex: MOE, ERP, APP)\n2. Nome completo do projeto\n3. Justificativas – Por que esse projeto existe? (colete múltiplos itens se houver)\n4. Objetivos – Qual o objetivo geral do projeto?\n5. Benefícios – Quais os benefícios esperados? (colete múltiplos itens)\n6. Produto – Descreva o produto ou serviço que será entregue\n7. Requisitos – Liste os principais requisitos; para cada um colete: título e descrição breve\n8. Stakeholders – Quem são as partes interessadas?\n9. Equipe – Quem faz parte da equipe e quais são seus papéis?\n10. Grupo de Entregas – Quais são as principais fases ou entregas do projeto?\n11. Restrições – Quais as limitações conhecidas do projeto?\n12. Premissas – O que é assumido como verdadeiro para o projeto?\n13. Riscos – Quais os principais riscos identificados?\n14. Linha do Tempo – Descreva o cronograma resumido (ex: Semana 1: Planejamento)\n15. Métricas de Sucesso – Como o sucesso do projeto será medido?\n\nQuando TODOS os 15 campos estiverem coletados e confirmados pelo usuário, avise-o que o canvas está completo e que o PDF será gerado. Em seguida, responda EXATAMENTE no formato abaixo — sem nenhum texto antes ou depois:\n\nCANVAS_PRONTO\n{\"codigoProjeto\":\"SIGLA\",\"nomeProjeto\":\"Nome do Projeto\",\"justificativas\":[\"justificativa 1\",\"justificativa 2\"],\"objetivos\":\"Descrição dos objetivos\",\"beneficios\":[\"benefício 1\",\"benefício 2\"],\"produto\":\"Descrição do produto\",\"requisitos\":[{\"titulo\":\"Título do requisito\",\"descricao\":\"Descrição detalhada\"}],\"stakeholders\":[\"stakeholder 1\"],\"equipe\":[\"membro - papel\"],\"grupoDeEntregas\":[\"entrega 1\",\"entrega 2\"],\"restricoes\":[\"restrição 1\"],\"premissas\":[\"premissa 1\"],\"riscos\":[\"risco 1\"],\"linhaDoTempo\":[\"Semana 1: tarefa\"],\"metricasDeSucesso\":[\"métrica 1\"]}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [160, 300],
+      "id": "pmc-0004-0004-0004-000000000004",
+      "name": "AI Agent Canvas"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [160, 520],
+      "id": "pmc-0005-0005-0005-000000000005",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "gsblv4wk8r2vQYmU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Set Dados').item.json.chatId }}",
+        "sessionTTL": 3600,
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [360, 520],
+      "id": "pmc-0006-0006-0006-000000000006",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "DMr7Yh9NUsm98JJd",
+          "name": "Redis account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('Set Dados').item.json.session }}",
+        "chatId": "={{ $('Set Dados').item.json.chatId }}",
+        "messageId": "={{ $('Set Dados').item.json.payload_id }}",
+        "participant": "",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [460, 300],
+      "id": "pmc-0007-0007-0007-000000000007",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "KXDJSMkTQ7tf0CDY",
+          "name": "WAHA account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-canvas-pronto",
+              "leftValue": "={{ $('AI Agent Canvas').item.json.output }}",
+              "rightValue": "CANVAS_PRONTO",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [700, 300],
+      "id": "pmc-0008-0008-0008-000000000008",
+      "name": "Canvas Pronto?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Busca o output diretamente no nó do agente (evita perda ao passar por nós intermediários)\nconst output = $('AI Agent Canvas').first().json.output;\n\nif (!output) {\n  throw new Error('Campo output não encontrado no AI Agent Canvas.');\n}\n\nconst marker = 'CANVAS_PRONTO\\n';\nconst idx = output.indexOf(marker);\n\nif (idx === -1) {\n  throw new Error('Marcador CANVAS_PRONTO não encontrado. Saída recebida: ' + output.substring(0, 200));\n}\n\nconst jsonStr = output.substring(idx + marker.length).trim();\n\nlet canvasData;\ntry {\n  canvasData = JSON.parse(jsonStr);\n} catch (e) {\n  throw new Error('Falha ao parsear JSON do canvas: ' + e.message + '\\nJSON recebido: ' + jsonStr.substring(0, 300));\n}\n\nreturn { json: canvasData };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 140],
+      "id": "pmc-0009-0009-0009-000000000009",
+      "name": "Extrair JSON Canvas"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://canvas-pdf-gps:8080/api/canvas/generate",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [1180, 140],
+      "id": "pmc-0010-0010-0010-000000000010",
+      "name": "Gerar PDF Canvas"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "default",
+        "chatId": "={{ $('Set Dados').item.json.chatId }}",
+        "text": "=✅ Seu *Project Model Canvas* foi gerado com sucesso!\n\n📄 Acesse o link abaixo para baixar o PDF:\n{{ $json.downloadUrl }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [1420, 140],
+      "id": "pmc-0011-0011-0011-000000000011",
+      "name": "Enviar Link PDF",
+      "credentials": {
+        "wahaApi": {
+          "id": "KXDJSMkTQ7tf0CDY",
+          "name": "WAHA account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('Set Dados').item.json.session }}",
+        "chatId": "={{ $('Set Dados').item.json.chatId }}",
+        "text": "={{ $('AI Agent Canvas').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [940, 460],
+      "id": "pmc-0013-0013-0013-000000000013",
+      "name": "Enviar Resposta Texto",
+      "credentials": {
+        "wahaApi": {
+          "id": "KXDJSMkTQ7tf0CDY",
+          "name": "WAHA account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Dados": {
+      "main": [
+        [
+          {
+            "node": "Ignorar mensagens próprias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ignorar mensagens próprias": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "AI Agent Canvas": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Canvas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Canvas",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Canvas Pronto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canvas Pronto?": {
+      "main": [
+        [
+          {
+            "node": "Extrair JSON Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Resposta Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair JSON Canvas": {
+      "main": [
+        [
+          {
+            "node": "Gerar PDF Canvas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar PDF Canvas": {
+      "main": [
+        [
+          {
+            "node": "Enviar Link PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "pmc-workflow-v1-canvas",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0177ba3b31ff93830343884ddfada6bae30dd767f9f803dc8604757ea2c76890"
+  },
+  "id": "CanvasPMCWorkflow001",
+  "tags": []
+}
