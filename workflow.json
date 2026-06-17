@@ -225,10 +225,30 @@
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
+      "typeVersion": 4.2,
       "position": [1180, 140],
       "id": "pmc-0010-0010-0010-000000000010",
       "name": "Gerar PDF Canvas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-dl-001",
+              "name": "downloadUrl",
+              "value": "={{ $json.downloadUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1360, 140],
+      "id": "pmc-0015-0015-0015-000000000015",
+      "name": "Extrair Download URL"
     },
     {
       "parameters": {
@@ -236,12 +256,12 @@
         "operation": "Send Text",
         "session": "default",
         "chatId": "={{ $('Set Dados').item.json.chatId }}",
-        "text": "=✅ Seu *Project Model Canvas* foi gerado com sucesso!\n\n📄 Acesse o link abaixo para baixar o PDF:\n{{ $json.downloadUrl }}",
+        "text": "={{ '✅ Seu *Project Model Canvas* foi gerado com sucesso!\\n\\n📄 Acesse o link abaixo para baixar o PDF:\\n' + $json.downloadUrl }}",
         "requestOptions": {}
       },
       "type": "n8n-nodes-waha.WAHA",
       "typeVersion": 202411,
-      "position": [1420, 140],
+      "position": [1540, 140],
       "id": "pmc-0011-0011-0011-000000000011",
       "name": "Enviar Link PDF",
       "credentials": {
@@ -383,6 +403,17 @@
       ]
     },
     "Gerar PDF Canvas": {
+      "main": [
+        [
+          {
+            "node": "Extrair Download URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Download URL": {
       "main": [
         [
           {
